@@ -7,8 +7,7 @@ var DEFAULT_WIDTH = 640,
     MINCE_PIE_HEIGHT = 72,
     MINCE_PIE_THROW_Y_THRESHOLD = 20,
     stage = new PIXI.Stage(0x55813a, true),
-    gameContainer = new PIXI.DisplayObjectContainer(),
-    renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT),
+    renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT, {transparent: true}),
     santaTexture,
     santa,
     mincePie,
@@ -25,11 +24,75 @@ var DEFAULT_WIDTH = 640,
     mincePieThrowLastY,
     mincePieVelocityX,
     mincePieVelocityY,
-    mincePieDoFling = false;
+    mincePieDoFling = false,
+    sceneContainers = {
+        intro: new PIXI.DisplayObjectContainer(),
+        game: new PIXI.DisplayObjectContainer(),
+        score: new PIXI.DisplayObjectContainer()
+    },
+    currentScene;
 
 init();
 
 function init() {
+
+    initIntroScene();
+    initGameScene();
+    initScoreScene();
+
+    switchScene('intro');
+
+    document.body.appendChild(renderer.view);
+
+    window.addEventListener('resize', onResize, false);
+
+    initInteractions();
+
+    rescale();
+
+    animate();
+
+}
+
+function switchScene(scene) {
+
+    currentScene = scene;
+
+    for( var key in sceneContainers ) {
+
+        if( sceneContainers.hasOwnProperty(key) ) {
+            sceneContainers[key].visible = key === scene;
+        }
+
+    }
+
+}
+
+function initIntroScene() {
+
+    var introContainer = sceneContainers.intro;
+
+    introContainer.width = DEFAULT_WIDTH;
+    introContainer.height = DEFAULT_HEIGHT;
+
+    // Title
+
+    var title = new PIXI.Text("Santa\nWants\nPies", {font:'90px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
+
+    title.anchor.x = 0.5;
+
+    title.position.x = DEFAULT_WIDTH / 2;
+    title.position.y = 100;
+
+    introContainer.addChild(title);
+
+    stage.addChild(introContainer);
+
+}
+
+function initGameScene() {
+
+    var gameContainer = sceneContainers.game;
 
     gameContainer.width = DEFAULT_WIDTH;
     gameContainer.height = DEFAULT_HEIGHT;
@@ -68,15 +131,54 @@ function init() {
 
     stage.addChild(gameContainer);
 
-    document.body.appendChild(renderer.view);
+}
 
-    window.addEventListener('resize', onResize, false);
+function initGameScene() {
 
-    initInteractions();
+    var gameContainer = sceneContainers.game;
 
-    rescale();
+    gameContainer.width = DEFAULT_WIDTH;
+    gameContainer.height = DEFAULT_HEIGHT;
 
-    animate();
+    // Santa
+
+    santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png');
+
+    santa = new PIXI.Sprite(santaTexture);
+
+    santa.anchor.x = 0;
+
+    santa.position.x = SANTA_PADDING;
+    santa.position.y = 50;
+
+    gameContainer.addChild(santa);
+
+    // Mince pie
+
+    var mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png');
+
+    mincePie = new PIXI.Sprite(mincePieTexture);
+
+    mincePie.interactive = true;
+
+    mincePie.anchor.x = 0.5;
+    mincePie.anchor.y = 0.5;
+
+    mincePie.position.x = (DEFAULT_WIDTH / 2);
+    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT/2 - 100;
+
+    mincePieOrigX = mincePie.position.x;
+    mincePieOrigY = mincePie.position.y;
+
+    gameContainer.addChild(mincePie);
+
+    stage.addChild(gameContainer);
+
+}
+
+function initScoreScene() {
+
+    // TODO
 
 }
 
@@ -97,7 +199,7 @@ function initInteractions() {
 
         if( mincePieBeingDragged ) {
 
-            console.log('move', data);
+            //console.log('move', data);
 
             mincePieDragFrames++;
 
@@ -188,20 +290,28 @@ function updateMincePiePosition() {
         if( mincePie.position.y > -MINCE_PIE_HEIGHT ) {
 
             mincePie.position.y += mincePieVelocityY;
-            // TODO acceleration...
+
+            // Hit detection...
+            //if(  ) {
+
+            //}
 
         } else {
 
             console.log('out of bounds - throw finished');
             endMincePieFling();
-            return;
 
         }
+
+    }
+
+    if( mincePieDoFling ) {
 
         if( mincePie.position.x > -MINCE_PIE_WIDTH && mincePie.position.x < DEFAULT_WIDTH + MINCE_PIE_WIDTH ) {
 
             mincePie.position.x += mincePieVelocityX;
-            // TODO acceleration
+
+
 
         } else {
 
@@ -216,19 +326,22 @@ function updateMincePiePosition() {
 
 function animate() {
 
-    updateSantaPosition();
+    if( currentScene === 'game' ) {
 
-    updateMincePiePosition();
+        updateSantaPosition();
+        updateMincePiePosition();
+
+    }
 
     //TWEEN.update();
 
     // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
     // See: http://ezelia.com/2013/pixi-tutorial
-    applyRatio(gameContainer, scaleRatio);
+    applyRatio(scaleRatio);
 
     renderer.render(stage);
 
-    applyRatio(gameContainer, 1/scaleRatio);
+    applyRatio(1/scaleRatio);
 
     requestAnimationFrame( animate );
 
@@ -248,9 +361,15 @@ function rescale() {
 
 }
 
-function applyRatio(displayObject, ratio) {
+function applyRatio(ratio) {
 
-    displayObject.scale.x = displayObject.scale.x * ratio;
-    displayObject.scale.y = displayObject.scale.y * ratio;
+    for(var i = 0; i < stage.children.length; i++) {
+
+        var displayObjectContainer = stage.children[i];
+
+        displayObjectContainer.scale.x = displayObjectContainer.scale.x * ratio;
+        displayObjectContainer.scale.y = displayObjectContainer.scale.y * ratio;
+
+    }
 
 }

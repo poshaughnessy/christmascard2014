@@ -6,7 +6,12 @@ body {
 
 body {
     overflow: hidden;
-    background: #426a29;
+    background-image: -ms-linear-gradient(top, #6E9F53 0%, #4A7631 100%);
+    background-image: -moz-linear-gradient(top, #6E9F53 0%, #4A7631 100%);
+    background-image: -o-linear-gradient(top, #6E9F53 0%, #4A7631 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #6E9F53), color-stop(1, #4A7631));
+    background-image: -webkit-linear-gradient(top, #6E9F53 0%, #4A7631 100%);
+    background-image: linear-gradient(to bottom, #6E9F53 0%, #4A7631 100%);
     display: -webkit-flex;
     -webkit-align-items: center;
     -webkit-justify-content: center;
