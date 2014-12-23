@@ -13,6 +13,7 @@ var DEFAULT_WIDTH = 640,
     mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png'),
     santa,
     mincePie,
+    score,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
     mincePieBeingDragged = false,
@@ -39,7 +40,7 @@ function init() {
 
     initIntroScene();
     initGameScene();
-    initScoreScene();
+    initResultScene();
 
     switchScene('intro');
 
@@ -145,6 +146,17 @@ function initGameScene() {
     gameContainer.width = DEFAULT_WIDTH;
     gameContainer.height = DEFAULT_HEIGHT;
 
+    // Score
+
+    score = new PIXI.Text('0', {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+
+    score.anchor.x = 1;
+
+    score.position.x = DEFAULT_WIDTH - 10;
+    score.position.y = 10;
+
+    gameContainer.addChild(score);
+
     // Santa
 
     santa = new PIXI.Sprite(santaTexture);
@@ -177,50 +189,7 @@ function initGameScene() {
 
 }
 
-function initGameScene() {
-
-    var gameContainer = sceneContainers.game;
-
-    gameContainer.width = DEFAULT_WIDTH;
-    gameContainer.height = DEFAULT_HEIGHT;
-
-    // Santa
-
-    santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png');
-
-    santa = new PIXI.Sprite(santaTexture);
-
-    santa.anchor.x = 0;
-
-    santa.position.x = SANTA_PADDING;
-    santa.position.y = 50;
-
-    gameContainer.addChild(santa);
-
-    // Mince pie
-
-    var mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png');
-
-    mincePie = new PIXI.Sprite(mincePieTexture);
-
-    mincePie.interactive = true;
-
-    mincePie.anchor.x = 0.5;
-    mincePie.anchor.y = 0.5;
-
-    mincePie.position.x = (DEFAULT_WIDTH / 2);
-    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT/2 - 100;
-
-    mincePieOrigX = mincePie.position.x;
-    mincePieOrigY = mincePie.position.y;
-
-    gameContainer.addChild(mincePie);
-
-    stage.addChild(gameContainer);
-
-}
-
-function initScoreScene() {
+function initResultScene() {
 
     // TODO
 
