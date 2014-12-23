@@ -7,7 +7,7 @@ var SANTA_SIZE = 250,
     DEFAULT_HEIGHT = 960,
     stage = new PIXI.Stage(0x55813a),
     gameContainer = new PIXI.DisplayObjectContainer(),
-    renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight),
+    renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT),
     santaTexture,
     santa,
     mincePie,
@@ -39,8 +39,12 @@ function init() {
 
     mincePie = new PIXI.Sprite(mincePieTexture);
 
+    console.log('DEFAULT_WIDTH, MINCE_PIE_WIDTH', DEFAULT_WIDTH, MINCE_PIE_WIDTH);
+
     mincePie.position.x = (DEFAULT_WIDTH / 2) - (MINCE_PIE_WIDTH / 2);
     mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT - 50;
+
+    console.log('mince pie pos x', mincePie.position.x);
 
     gameContainer.addChild(mincePie);
 
@@ -74,7 +78,6 @@ function animate() {
 
     applyRatio(gameContainer, 1/scaleRatio);
 
-    /*
     if( santaDirection == DIRECTION.RIGHT ) {
 
         if( santa.position.x < renderer.width - SANTA_PADDING ) {
@@ -92,7 +95,6 @@ function animate() {
         }
 
     }
-    */
 
     requestAnimationFrame( animate );
 
