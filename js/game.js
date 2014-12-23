@@ -132,6 +132,10 @@ function initIntroScene() {
 
     stage.addChild(introContainer);
 
+    button.mousedown = button.touchstart = function(data) {
+        switchScene('game');
+    };
+
 }
 
 function initGameScene() {
