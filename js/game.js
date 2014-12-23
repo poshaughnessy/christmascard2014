@@ -13,7 +13,8 @@ var DEFAULT_WIDTH = 640,
     mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png'),
     santa,
     mincePie,
-    score,
+    scoreText,
+    score = 0,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
     mincePieBeingDragged = false,
@@ -148,14 +149,14 @@ function initGameScene() {
 
     // Score
 
-    score = new PIXI.Text('0', {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+    scoreText = new PIXI.Text('0', {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
 
-    score.anchor.x = 1;
+    scoreText.anchor.x = 1;
 
-    score.position.x = DEFAULT_WIDTH - 10;
-    score.position.y = 10;
+    scoreText.position.x = DEFAULT_WIDTH - 10;
+    scoreText.position.y = 10;
 
-    gameContainer.addChild(score);
+    gameContainer.addChild(scoreText);
 
     // Santa
 
@@ -232,7 +233,6 @@ function initInteractions() {
 
     };
 
-    //stage.touchend = stage.mouseup = function(data){
     mincePie.mouseup = mincePie.touchend = mincePie.mouseupoutside = mincePie.touchendoutside = function(data) {
 
         if( mincePieBeingDragged ) {
@@ -304,10 +304,18 @@ function updateMincePiePosition() {
 
             mincePie.position.y += mincePieVelocityY;
 
-            // Hit detection...
-            //if(  ) {
+            // Collision detection...
+            if( mincePie.position.x >= santa.position.x &&
+                mincePie.position.x <= santa.position.x + santa.width &&
+                mincePie.position.y <= santa.position.y + (santa.height * 3/4) &&
+                mincePie.position.y >= santa.position.y ) {
 
-            //}
+                console.log('hit!');
+
+                increaseScore();
+                endMincePieFling();
+
+            }
 
         } else {
 
@@ -334,6 +342,14 @@ function updateMincePiePosition() {
         }
 
     }
+
+}
+
+function increaseScore() {
+
+    score++;
+
+    scoreText.setText( score );
 
 }
 
