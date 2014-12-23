@@ -3,6 +3,8 @@ var SANTA_SIZE = 250,
     DIRECTION = {LEFT : 0, RIGHT : 1},
     MINCE_PIE_WIDTH = 114,
     MINCE_PIE_HEIGHT = 72,
+    DEFAULT_WIDTH = 640,
+    DEFAULT_HEIGHT = 960,
     stage = new PIXI.Stage(0x55813a),
     gameContainer = new PIXI.DisplayObjectContainer(),
     renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight),
@@ -10,13 +12,16 @@ var SANTA_SIZE = 250,
     santa,
     mincePie,
     santaSpeed = 5,
-    santaDirection = DIRECTION.RIGHT;
+    santaDirection = DIRECTION.RIGHT,
+    scaleRatioX = 1,
+    scaleRatioY = 1;
 
 init();
 
 function init() {
 
-    stage ;
+    gameContainer.width = DEFAULT_WIDTH;
+    gameContainer.height = DEFAULT_HEIGHT;
 
     // Santa
 
@@ -35,8 +40,8 @@ function init() {
 
     mincePie = new PIXI.Sprite(mincePieTexture);
 
-    mincePie.position.x = window.innerWidth / 2 - (MINCE_PIE_WIDTH/2);
-    mincePie.position.y = window.innerHeight - MINCE_PIE_HEIGHT - 50;
+    mincePie.position.x = (DEFAULT_WIDTH / 2) - (MINCE_PIE_WIDTH / 2);
+    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT - 50;
 
     gameContainer.addChild(mincePie);
 
@@ -46,17 +51,34 @@ function init() {
 
     window.addEventListener('resize', onResize, false);
 
+    rescale();
+
+    /*
+    santa.position.x = SANTA_PADDING * scaleRatio;
+    santa.position.y = 50 * scaleRatio;
+
+    mincePie.position.x = renderer.width / 2 - ((MINCE_PIE_WIDTH*scaleRatio)/2);
+    mincePie.position.y = renderer.height - (MINCE_PIE_HEIGHT*scaleRatio) - (50 * scaleRatio);
+    */
+
     animate();
 
 }
 
 function animate() {
 
+    // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
+    // See: http://ezelia.com/2013/pixi-tutorial
+    applyRatio(gameContainer, scaleRatioX, scaleRatioY);
+
     renderer.render(stage);
 
+    applyRatio(gameContainer, 1/scaleRatioX, 1/scaleRatioY);
+
+    /*
     if( santaDirection == DIRECTION.RIGHT ) {
 
-        if( santa.position.x < window.innerWidth - SANTA_SIZE - SANTA_PADDING ) {
+        if( santa.position.x < renderer.width - SANTA_PADDING ) {
             santa.position.x += santaSpeed;
         } else {
             santaDirection = DIRECTION.LEFT;
@@ -71,7 +93,7 @@ function animate() {
         }
 
     }
-
+    */
 
     requestAnimationFrame( animate );
 
@@ -79,9 +101,47 @@ function animate() {
 
 function onResize() {
 
+    console.log('window width and height', window.innerWidth, window.innerHeight);
+
+    console.log('container width and height', gameContainer.width, gameContainer.height);
+
+    console.log('container scale x and y', gameContainer.scale.x, gameContainer.scale.y);
+
+    console.log('renderer width and height', renderer.width, renderer.height );
+
     //gameContainer.scale.x = gameContainer.width / window.innerWidth;
     //gameContainer.height = window.innerHeight;
 
     //renderer.resize(window.innerWidth, window.innerHeight);
+
+    rescale();
+
+}
+
+function rescale() {
+
+    //scaleRatio = Math.min(window.innerWidth / DEFAULT_WIDTH, window.innerHeight / DEFAULT_HEIGHT);
+
+    scaleRatioX = window.innerWidth / DEFAULT_WIDTH;
+    scaleRatioY = window.innerHeight / DEFAULT_HEIGHT;
+
+    renderer.resize( DEFAULT_WIDTH * scaleRatioX, DEFAULT_HEIGHT * scaleRatioY );
+
+    //gameContainer.scale = ratio;
+
+    //applyRatio(gameContainer, scaleRatioX, scaleRatioY);
+
+}
+
+function applyRatio(displayObject, ratioX, ratioY) {
+
+    displayObject.position.x = displayObject.position.x * ratioX;
+    displayObject.position.y = displayObject.position.y * ratioY;
+    displayObject.scale.x = displayObject.scale.x * ratioX;
+    displayObject.scale.y = displayObject.scale.y * ratioY;
+
+    for (var i = 0; i < displayObject.children.length; i++) {
+        applyRatio(displayObject.children[i], ratioX, ratioY);
+    }
 
 }
