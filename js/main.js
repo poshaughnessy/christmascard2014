@@ -1,10 +1,11 @@
-var SANTA_SIZE = 250,
+var DEFAULT_WIDTH = 640,
+    DEFAULT_HEIGHT = 960,
+    SANTA_SIZE = 250,
     SANTA_PADDING = 10,
     DIRECTION = {LEFT : 0, RIGHT : 1},
     MINCE_PIE_WIDTH = 114,
     MINCE_PIE_HEIGHT = 72,
-    DEFAULT_WIDTH = 640,
-    DEFAULT_HEIGHT = 960,
+    MINCE_PIE_THROW_Y_THRESHOLD = 20,
     stage = new PIXI.Stage(0x55813a, true),
     gameContainer = new PIXI.DisplayObjectContainer(),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT),
@@ -14,13 +15,17 @@ var SANTA_SIZE = 250,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
     scaleRatio = 1,
+    mincePieBeingDragged = false,
+    mincePieDragFrames = 0,
     mincePieOrigX,
     mincePieOrigY,
-    mincePieBeingDragged = false,
     mincePieThrowStartX,
     mincePieThrowStartY,
-    mincePieThrowYThreshold = 20,
-    mincePieThrowSpeed;
+    mincePieThrowLastX,
+    mincePieThrowLastY,
+    mincePieVelocityX,
+    mincePieVelocityY,
+    mincePieDoFling = false;
 
 init();
 
@@ -54,7 +59,7 @@ function init() {
     mincePie.anchor.y = 0.5;
 
     mincePie.position.x = (DEFAULT_WIDTH / 2);
-    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT - 50;
+    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT/2 - 100;
 
     mincePieOrigX = mincePie.position.x;
     mincePieOrigY = mincePie.position.y;
@@ -94,8 +99,16 @@ function initInteractions() {
 
             //console.log('move', mouseData);
 
-            mincePie.position.x = mincePieOrigX + (mouseData.originalEvent.clientX - mincePieThrowStartX);
-            mincePie.position.y = mincePieOrigY + (mouseData.originalEvent.clientY - mincePieThrowStartY);
+            mincePieDragFrames++;
+
+            mincePieVelocityX = (mouseData.originalEvent.clientX - mincePieThrowStartX) / mincePieDragFrames;
+            mincePieVelocityY = (mouseData.originalEvent.clientY - mincePieThrowStartY) / mincePieDragFrames;
+
+            mincePieThrowLastX = mouseData.originalEvent.clientX;
+            mincePieThrowLastY = mouseData.originalEvent.clientY;
+
+            mincePie.position.x = mincePieOrigX + (mincePieThrowLastX - mincePieThrowStartX);
+            mincePie.position.y = mincePieOrigY + (mincePieThrowLastY - mincePieThrowStartY);
 
         }
 
@@ -107,15 +120,46 @@ function initInteractions() {
 
             console.log( 'up', mouseData );
 
-            mincePieBeingDragged = false;
-
             var endX = mouseData.originalEvent.clientX,
                 endY = mouseData.originalEvent.clientY;
 
-            // TODO make it fling up appropriately if movement passes threshold, otherwise reset position
+            if( mincePieThrowStartY - endY > MINCE_PIE_THROW_Y_THRESHOLD ) {
 
-            mincePie.position.x = mincePieOrigX;
-            mincePie.position.y = mincePieOrigY;
+                // Fling the mince pie up
+
+                //mincePieVelocityX = endX - mincePieThrowLastX;
+                //mincePieVelocityY = endY - mincePieThrowLastY;
+
+                mincePieDoFling = true;
+
+                /*
+                var flingEndX = (endX - mincePieThrowStartX) * ((endY + MINCE_PIE_HEIGHT) / (endY - mincePieThrowStartY)),
+                    flingEndY = -MINCE_PIE_HEIGHT,
+                    flingDuration = 5000; // XXX for now
+
+                new TWEEN.Tween( mincePie.position )
+                    .to( { x: flingEndX, y: flingEndY }, flingDuration )
+                    .onComplete(function() {
+
+                        console.log('Finished fling');
+
+                        mincePie.position.x = mincePieOrigX;
+                        mincePie.position.y = mincePieOrigY;
+
+                    })
+                    .easing( TWEEN.Easing.Quadratic.InOut )
+                    .start();
+                */
+
+            } else {
+
+                mincePie.position.x = mincePieOrigX;
+                mincePie.position.y = mincePieOrigY;
+
+            }
+
+            mincePieBeingDragged = false;
+            mincePieDragFrames = 0;
 
         }
 
@@ -151,7 +195,7 @@ function initInteractions() {
 
 }
 
-function animate() {
+function updateSantaPosition() {
 
     if( santaDirection == DIRECTION.RIGHT ) {
 
@@ -170,6 +214,61 @@ function animate() {
         }
 
     }
+
+}
+
+function endMincePieFling() {
+
+    mincePieDoFling = false;
+
+    mincePieVelocityX = 0;
+    mincePieVelocityY = 0;
+
+    mincePie.position.x = mincePieOrigX;
+    mincePie.position.y = mincePieOrigY;
+
+}
+
+function updateMincePiePosition() {
+
+    if( mincePieDoFling ) {
+
+        if( mincePie.position.y > -MINCE_PIE_HEIGHT ) {
+
+            mincePie.position.y += mincePieVelocityY;
+            // TODO acceleration...
+
+        } else {
+
+            console.log('out of bounds - throw finished');
+            endMincePieFling();
+            return;
+
+        }
+
+        if( mincePie.position.x > -MINCE_PIE_WIDTH && mincePie.position.x < DEFAULT_WIDTH + MINCE_PIE_WIDTH ) {
+
+            mincePie.position.x += mincePieVelocityX;
+            // TODO acceleration
+
+        } else {
+
+            console.log('out of bounds - throw finished');
+            endMincePieFling();
+
+        }
+
+    }
+
+}
+
+function animate() {
+
+    updateSantaPosition();
+
+    updateMincePiePosition();
+
+    //TWEEN.update();
 
     // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
     // See: http://ezelia.com/2013/pixi-tutorial
