@@ -57,14 +57,6 @@ function init() {
 
     rescale();
 
-    /*
-    santa.position.x = SANTA_PADDING * scaleRatio;
-    santa.position.y = 50 * scaleRatio;
-
-    mincePie.position.x = renderer.width / 2 - ((MINCE_PIE_WIDTH*scaleRatio)/2);
-    mincePie.position.y = renderer.height - (MINCE_PIE_HEIGHT*scaleRatio) - (50 * scaleRatio);
-    */
-
     animate();
 
 }
@@ -105,19 +97,6 @@ function animate() {
 
 function onResize() {
 
-    console.log('window width and height', window.innerWidth, window.innerHeight);
-
-    console.log('container width and height', gameContainer.width, gameContainer.height);
-
-    console.log('container scale x and y', gameContainer.scale.x, gameContainer.scale.y);
-
-    console.log('renderer width and height', renderer.width, renderer.height );
-
-    //gameContainer.scale.x = gameContainer.width / window.innerWidth;
-    //gameContainer.height = window.innerHeight;
-
-    //renderer.resize(window.innerWidth, window.innerHeight);
-
     rescale();
 
 }
@@ -126,28 +105,13 @@ function rescale() {
 
     scaleRatio = Math.min(window.innerWidth / DEFAULT_WIDTH, window.innerHeight / DEFAULT_HEIGHT);
 
-    //scaleRatioX = window.innerWidth / DEFAULT_WIDTH;
-    //scaleRatioY = window.innerHeight / DEFAULT_HEIGHT;
-
     renderer.resize( DEFAULT_WIDTH * scaleRatio, DEFAULT_HEIGHT * scaleRatio );
-
-    //gameContainer.scale = ratio;
-
-    //applyRatio(gameContainer, scaleRatioX, scaleRatioY);
 
 }
 
 function applyRatio(displayObject, ratio) {
 
-    //displayObject.position.x = displayObject.position.x * ratio;
-    //displayObject.position.y = displayObject.position.y * ratio;
     displayObject.scale.x = displayObject.scale.x * ratio;
     displayObject.scale.y = displayObject.scale.y * ratio;
-
-    /*
-    for (var i = 0; i < displayObject.children.length; i++) {
-        applyRatio(displayObject.children[i], ratio);
-    }
-    */
 
 }
