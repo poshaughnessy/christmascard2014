@@ -5,7 +5,7 @@ var SANTA_SIZE = 250,
     MINCE_PIE_HEIGHT = 72,
     DEFAULT_WIDTH = 640,
     DEFAULT_HEIGHT = 960,
-    stage = new PIXI.Stage(0x55813a),
+    stage = new PIXI.Stage(0x55813a, true),
     gameContainer = new PIXI.DisplayObjectContainer(),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT),
     santaTexture,
@@ -13,7 +13,14 @@ var SANTA_SIZE = 250,
     mincePie,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
-    scaleRatio = 1;
+    scaleRatio = 1,
+    mincePieOrigX,
+    mincePieOrigY,
+    mincePieBeingDragged = false,
+    mincePieThrowStartX,
+    mincePieThrowStartY,
+    mincePieThrowYThreshold = 20,
+    mincePieThrowSpeed;
 
 init();
 
@@ -41,11 +48,16 @@ function init() {
 
     mincePie = new PIXI.Sprite(mincePieTexture);
 
+    mincePie.interactive = true;
+
     mincePie.anchor.x = 0.5;
     mincePie.anchor.y = 0.5;
 
     mincePie.position.x = (DEFAULT_WIDTH / 2);
     mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT - 50;
+
+    mincePieOrigX = mincePie.position.x;
+    mincePieOrigY = mincePie.position.y;
 
     gameContainer.addChild(mincePie);
 
@@ -55,9 +67,87 @@ function init() {
 
     window.addEventListener('resize', onResize, false);
 
+    initInteractions();
+
     rescale();
 
     animate();
+
+}
+
+function initInteractions() {
+
+    mincePie.mousedown = function(mouseData){
+
+        mincePieBeingDragged = true;
+
+        console.log( 'down', mouseData );
+
+        mincePieThrowStartX = mouseData.originalEvent.clientX;
+        mincePieThrowStartY = mouseData.originalEvent.clientY;
+
+    };
+
+    mincePie.mousemove = function(mouseData) {
+
+        if( mincePieBeingDragged ) {
+
+            //console.log('move', mouseData);
+
+            mincePie.position.x = mincePieOrigX + (mouseData.originalEvent.clientX - mincePieThrowStartX);
+            mincePie.position.y = mincePieOrigY + (mouseData.originalEvent.clientY - mincePieThrowStartY);
+
+        }
+
+    };
+
+    stage.mouseup = function(mouseData){
+
+        if( mincePieBeingDragged ) {
+
+            console.log( 'up', mouseData );
+
+            mincePieBeingDragged = false;
+
+            var endX = mouseData.originalEvent.clientX,
+                endY = mouseData.originalEvent.clientY;
+
+            // TODO make it fling up appropriately if movement passes threshold, otherwise reset position
+
+            mincePie.position.x = mincePieOrigX;
+            mincePie.position.y = mincePieOrigY;
+
+        }
+
+    };
+
+    mincePie.touchstart = function(touchData){
+
+    };
+
+    mincePie.touchend = function(touchData){
+
+    };
+
+
+    /*
+    mincePie.tap = function(touchData){
+
+    };
+
+    mincePie.click = function(mouseData){
+
+    };
+
+    mincePie.mouseover = function(mouseData){
+
+    };
+
+    mincePie.mouseout = function(mouseData){
+
+    };
+
+    */
 
 }
 
