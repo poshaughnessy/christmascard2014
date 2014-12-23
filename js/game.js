@@ -1,4 +1,6 @@
-var DEFAULT_WIDTH = 640,
+var TIME_PER_GAME = 6,
+    TIMER_WARN_THRESHOLD = 5,
+    DEFAULT_WIDTH = 640,
     DEFAULT_HEIGHT = 960,
     SANTA_SIZE = 250,
     SANTA_PADDING = 10,
@@ -8,14 +10,21 @@ var DEFAULT_WIDTH = 640,
     MINCE_PIE_THROW_Y_THRESHOLD = 20,
     stage = new PIXI.Stage(0x55813a, true),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT, {transparent: true}),
-    scaleRatio = 1,
+    timerOKTexture = PIXI.Texture.fromImage('img/timer.png'),
+    timerWarnTexture = PIXI.Texture.fromImage('img/timer-red.png'),
     santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png'),
     mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png'),
     santa,
     mincePie,
+    timerIcon,
+    timerText,
     scoreText,
+    scoreResultText,
+    timer = TIME_PER_GAME,
+    timerTimeout,
     score = 0,
     santaSpeed = 5,
+    scaleRatio = 1,
     santaDirection = DIRECTION.RIGHT,
     mincePieBeingDragged = false,
     mincePieDragFrames = 0,
@@ -31,7 +40,7 @@ var DEFAULT_WIDTH = 640,
     sceneContainers = {
         intro: new PIXI.DisplayObjectContainer(),
         game: new PIXI.DisplayObjectContainer(),
-        score: new PIXI.DisplayObjectContainer()
+        result: new PIXI.DisplayObjectContainer()
     },
     currentScene;
 
@@ -135,7 +144,7 @@ function initIntroScene() {
     stage.addChild(introContainer);
 
     button.mousedown = button.touchstart = function(data) {
-        switchScene('game');
+        startGame();
     };
 
 }
@@ -147,9 +156,25 @@ function initGameScene() {
     gameContainer.width = DEFAULT_WIDTH;
     gameContainer.height = DEFAULT_HEIGHT;
 
+    // Timer
+
+    timerIcon = new PIXI.Sprite(timerOKTexture);
+
+    timerIcon.position.x = 5;
+    timerIcon.position.y = 22;
+
+    gameContainer.addChild( timerIcon );
+
+    timerText = new PIXI.Text(timer, {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+
+    timerText.position.x = 55;
+    timerText.position.y = 10;
+
+    gameContainer.addChild(timerText);
+
     // Score
 
-    scoreText = new PIXI.Text('0', {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+    scoreText = new PIXI.Text(score, {font:'55px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
 
     scoreText.anchor.x = 1;
 
@@ -192,7 +217,53 @@ function initGameScene() {
 
 function initResultScene() {
 
-    // TODO
+    var resultContainer = sceneContainers.result;
+
+    // Score
+
+    var youScored = new PIXI.Text('You scored', {font:'80px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 2});
+
+    youScored.anchor.x = 0.5;
+
+    youScored.position.x = DEFAULT_WIDTH / 2;
+    youScored.position.y = 100;
+
+    resultContainer.addChild(youScored);
+
+
+    scoreResultText = new PIXI.Text(score, {font:'120px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+
+    scoreResultText.anchor.x = 0.5;
+
+    scoreResultText.position.x = DEFAULT_WIDTH / 2;
+    scoreResultText.position.y = youScored.position.y + youScored.height + 100;
+
+    resultContainer.addChild(scoreResultText);
+
+    // Try again button
+
+    var textureButton = PIXI.Texture.fromImage('img/button-try-again.png');
+
+    var button = new PIXI.Sprite(textureButton);
+    button.buttonMode = true;
+
+    button.anchor.x = 0.5;
+    button.anchor.y = 1;
+
+    button.position.x = DEFAULT_WIDTH / 2;
+    button.position.y = DEFAULT_HEIGHT - 80;
+
+    button.interactive = true;
+
+    resultContainer.addChild(button);
+
+    stage.addChild(resultContainer);
+
+    button.mousedown = button.touchstart = function(data) {
+        startGame();
+    };
+
+    stage.addChild(resultContainer);
 
 }
 
@@ -259,6 +330,58 @@ function initInteractions() {
         }
 
     };
+
+}
+
+function startGame() {
+
+    score = 0;
+    scoreText.setText(score);
+
+    timerIcon.setTexture(timerOKTexture);
+    timerText.tint = 0xFFFFFF;
+
+    if( timerTimeout ) {
+        clearTimeout(timerTimeout);
+    }
+
+    timer = TIME_PER_GAME;
+
+    switchScene('game');
+
+    timerTimeout = setTimeout(onTimerTick, 1000);
+
+}
+
+function onTimerTick() {
+
+    if( timer == 0 ) {
+        endGame();
+    } else {
+
+        timer--;
+
+        timerText.setText(timer);
+
+        if( timer <= TIMER_WARN_THRESHOLD ) {
+            timerIcon.setTexture(timerWarnTexture);
+            timerText.tint = 0xf13d08;
+        }
+
+        timerTimeout = setTimeout(onTimerTick, 1000);
+
+    }
+
+}
+
+function endGame() {
+
+    clearTimeout(timerTimeout);
+
+    scoreResultText.setText(score);
+
+    switchScene('result');
+
 
 }
 
