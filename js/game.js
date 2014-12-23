@@ -78,12 +78,12 @@ function initIntroScene() {
 
     // Title
 
-    var title = new PIXI.Text('Santa\nWants\nPies', {font:'90px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
+    var title = new PIXI.Text('Santa\nWants\nPies', {font:'100px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
 
     title.anchor.x = 0.5;
 
     title.position.x = DEFAULT_WIDTH / 2;
-    title.position.y = 80;
+    title.position.y = 60;
 
     introContainer.addChild(title);
 
