@@ -7,16 +7,14 @@ body {
 body {
     overflow: hidden;
     background: #426a29;
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 canvas {
     display: block;
-    margin: 0 auto;
-    position: relative;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    -moz-transform: translateY(-50%);
-    -o-transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
 }
