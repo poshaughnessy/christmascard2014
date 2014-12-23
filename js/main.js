@@ -82,30 +82,33 @@ function init() {
 
 function initInteractions() {
 
-    mincePie.mousedown = function(mouseData){
+    mincePie.touchstart = mincePie.mousedown = function(data){
 
         mincePieBeingDragged = true;
 
-        console.log( 'down', mouseData );
+        console.log( 'down', data );
 
-        mincePieThrowStartX = mouseData.originalEvent.clientX;
-        mincePieThrowStartY = mouseData.originalEvent.clientY;
+        mincePieThrowStartX = data.originalEvent.clientX || data.global.x;
+        mincePieThrowStartY = data.originalEvent.clientY || data.global.y;
 
     };
 
-    mincePie.mousemove = function(mouseData) {
+    mincePie.touchmove = mincePie.mousemove = function(data) {
 
         if( mincePieBeingDragged ) {
 
-            //console.log('move', mouseData);
+            console.log('move', data);
 
             mincePieDragFrames++;
 
-            mincePieVelocityX = (mouseData.originalEvent.clientX - mincePieThrowStartX) / mincePieDragFrames;
-            mincePieVelocityY = (mouseData.originalEvent.clientY - mincePieThrowStartY) / mincePieDragFrames;
+            var x = data.originalEvent.clientX || data.global.x,
+                y = data.originalEvent.clientY || data.global.y;
 
-            mincePieThrowLastX = mouseData.originalEvent.clientX;
-            mincePieThrowLastY = mouseData.originalEvent.clientY;
+            mincePieVelocityX = (x - mincePieThrowStartX) / mincePieDragFrames;
+            mincePieVelocityY = (y - mincePieThrowStartY) / mincePieDragFrames;
+
+            mincePieThrowLastX = x;
+            mincePieThrowLastY = y;
 
             mincePie.position.x = mincePieOrigX + (mincePieThrowLastX - mincePieThrowStartX);
             mincePie.position.y = mincePieOrigY + (mincePieThrowLastY - mincePieThrowStartY);
@@ -114,42 +117,19 @@ function initInteractions() {
 
     };
 
-    stage.mouseup = function(mouseData){
+    //stage.touchend = stage.mouseup = function(data){
+    mincePie.mouseup = mincePie.touchend = mincePie.mouseupoutside = mincePie.touchendoutside = function(data) {
 
         if( mincePieBeingDragged ) {
 
-            console.log( 'up', mouseData );
+            console.log( 'up', data );
 
-            var endX = mouseData.originalEvent.clientX,
-                endY = mouseData.originalEvent.clientY;
+            var y = data.originalEvent.clientY || data.global.y;
 
-            if( mincePieThrowStartY - endY > MINCE_PIE_THROW_Y_THRESHOLD ) {
+            if( mincePieThrowStartY - y > MINCE_PIE_THROW_Y_THRESHOLD ) {
 
-                // Fling the mince pie up
-
-                //mincePieVelocityX = endX - mincePieThrowLastX;
-                //mincePieVelocityY = endY - mincePieThrowLastY;
-
+                // Fling the mince pie
                 mincePieDoFling = true;
-
-                /*
-                var flingEndX = (endX - mincePieThrowStartX) * ((endY + MINCE_PIE_HEIGHT) / (endY - mincePieThrowStartY)),
-                    flingEndY = -MINCE_PIE_HEIGHT,
-                    flingDuration = 5000; // XXX for now
-
-                new TWEEN.Tween( mincePie.position )
-                    .to( { x: flingEndX, y: flingEndY }, flingDuration )
-                    .onComplete(function() {
-
-                        console.log('Finished fling');
-
-                        mincePie.position.x = mincePieOrigX;
-                        mincePie.position.y = mincePieOrigY;
-
-                    })
-                    .easing( TWEEN.Easing.Quadratic.InOut )
-                    .start();
-                */
 
             } else {
 
@@ -164,34 +144,6 @@ function initInteractions() {
         }
 
     };
-
-    mincePie.touchstart = function(touchData){
-
-    };
-
-    mincePie.touchend = function(touchData){
-
-    };
-
-
-    /*
-    mincePie.tap = function(touchData){
-
-    };
-
-    mincePie.click = function(mouseData){
-
-    };
-
-    mincePie.mouseover = function(mouseData){
-
-    };
-
-    mincePie.mouseout = function(mouseData){
-
-    };
-
-    */
 
 }
 
