@@ -28,6 +28,8 @@ function init() {
 
     santa = new PIXI.Sprite(santaTexture);
 
+    santa.anchor.x = 0;
+
     santa.position.x = SANTA_PADDING;
     santa.position.y = 50;
 
@@ -39,12 +41,11 @@ function init() {
 
     mincePie = new PIXI.Sprite(mincePieTexture);
 
-    console.log('DEFAULT_WIDTH, MINCE_PIE_WIDTH', DEFAULT_WIDTH, MINCE_PIE_WIDTH);
+    mincePie.anchor.x = 0.5;
+    mincePie.anchor.y = 0.5;
 
-    mincePie.position.x = (DEFAULT_WIDTH / 2) - (MINCE_PIE_WIDTH / 2);
+    mincePie.position.x = (DEFAULT_WIDTH / 2);
     mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT - 50;
-
-    console.log('mince pie pos x', mincePie.position.x);
 
     gameContainer.addChild(mincePie);
 
@@ -70,17 +71,11 @@ function init() {
 
 function animate() {
 
-    // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
-    // See: http://ezelia.com/2013/pixi-tutorial
-    applyRatio(gameContainer, scaleRatio);
-
-    renderer.render(stage);
-
-    applyRatio(gameContainer, 1/scaleRatio);
-
     if( santaDirection == DIRECTION.RIGHT ) {
 
-        if( santa.position.x < renderer.width - SANTA_PADDING ) {
+        console.log( 'santa x, renderer width, santa padding, santa speed', santa.position.x, renderer.width, SANTA_PADDING, santaSpeed );
+
+        if( santa.position.x < DEFAULT_WIDTH - SANTA_SIZE - SANTA_PADDING ) {
             santa.position.x += santaSpeed;
         } else {
             santaDirection = DIRECTION.LEFT;
@@ -95,6 +90,14 @@ function animate() {
         }
 
     }
+
+    // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
+    // See: http://ezelia.com/2013/pixi-tutorial
+    applyRatio(gameContainer, scaleRatio);
+
+    renderer.render(stage);
+
+    applyRatio(gameContainer, 1/scaleRatio);
 
     requestAnimationFrame( animate );
 
@@ -136,13 +139,15 @@ function rescale() {
 
 function applyRatio(displayObject, ratio) {
 
-    displayObject.position.x = displayObject.position.x * ratio;
-    displayObject.position.y = displayObject.position.y * ratio;
+    //displayObject.position.x = displayObject.position.x * ratio;
+    //displayObject.position.y = displayObject.position.y * ratio;
     displayObject.scale.x = displayObject.scale.x * ratio;
     displayObject.scale.y = displayObject.scale.y * ratio;
 
+    /*
     for (var i = 0; i < displayObject.children.length; i++) {
         applyRatio(displayObject.children[i], ratio);
     }
+    */
 
 }
