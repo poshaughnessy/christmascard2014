@@ -1,5 +1,5 @@
-var TIME_PER_GAME = 6,
-    TIMER_WARN_THRESHOLD = 5,
+var TIME_PER_GAME = 10,
+    TIMER_WARN_THRESHOLD = 3,
     DEFAULT_WIDTH = 640,
     DEFAULT_HEIGHT = 960,
     SANTA_SIZE = 250,
@@ -346,6 +346,9 @@ function startGame() {
     }
 
     timer = TIME_PER_GAME;
+    timerText.setText(timer);
+
+    console.log('reset timer', timer);
 
     switchScene('game');
 
@@ -355,11 +358,15 @@ function startGame() {
 
 function onTimerTick() {
 
-    if( timer == 0 ) {
+    if( timer < 1 ) {
+
         endGame();
+
     } else {
 
         timer--;
+
+        console.log('timer tick', timer);
 
         timerText.setText(timer);
 
@@ -368,6 +375,7 @@ function onTimerTick() {
             timerText.tint = 0xf13d08;
         }
 
+        clearTimeout(timerTimeout);
         timerTimeout = setTimeout(onTimerTick, 1000);
 
     }
