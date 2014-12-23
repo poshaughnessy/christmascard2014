@@ -13,8 +13,7 @@ var SANTA_SIZE = 250,
     mincePie,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
-    scaleRatioX = 1,
-    scaleRatioY = 1;
+    scaleRatio = 1;
 
 init();
 
@@ -69,11 +68,11 @@ function animate() {
 
     // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
     // See: http://ezelia.com/2013/pixi-tutorial
-    applyRatio(gameContainer, scaleRatioX, scaleRatioY);
+    applyRatio(gameContainer, scaleRatio);
 
     renderer.render(stage);
 
-    applyRatio(gameContainer, 1/scaleRatioX, 1/scaleRatioY);
+    applyRatio(gameContainer, 1/scaleRatio);
 
     /*
     if( santaDirection == DIRECTION.RIGHT ) {
@@ -120,12 +119,12 @@ function onResize() {
 
 function rescale() {
 
-    //scaleRatio = Math.min(window.innerWidth / DEFAULT_WIDTH, window.innerHeight / DEFAULT_HEIGHT);
+    scaleRatio = Math.min(window.innerWidth / DEFAULT_WIDTH, window.innerHeight / DEFAULT_HEIGHT);
 
-    scaleRatioX = window.innerWidth / DEFAULT_WIDTH;
-    scaleRatioY = window.innerHeight / DEFAULT_HEIGHT;
+    //scaleRatioX = window.innerWidth / DEFAULT_WIDTH;
+    //scaleRatioY = window.innerHeight / DEFAULT_HEIGHT;
 
-    renderer.resize( DEFAULT_WIDTH * scaleRatioX, DEFAULT_HEIGHT * scaleRatioY );
+    renderer.resize( DEFAULT_WIDTH * scaleRatio, DEFAULT_HEIGHT * scaleRatio );
 
     //gameContainer.scale = ratio;
 
@@ -133,15 +132,15 @@ function rescale() {
 
 }
 
-function applyRatio(displayObject, ratioX, ratioY) {
+function applyRatio(displayObject, ratio) {
 
-    displayObject.position.x = displayObject.position.x * ratioX;
-    displayObject.position.y = displayObject.position.y * ratioY;
-    displayObject.scale.x = displayObject.scale.x * ratioX;
-    displayObject.scale.y = displayObject.scale.y * ratioY;
+    displayObject.position.x = displayObject.position.x * ratio;
+    displayObject.position.y = displayObject.position.y * ratio;
+    displayObject.scale.x = displayObject.scale.x * ratio;
+    displayObject.scale.y = displayObject.scale.y * ratio;
 
     for (var i = 0; i < displayObject.children.length; i++) {
-        applyRatio(displayObject.children[i], ratioX, ratioY);
+        applyRatio(displayObject.children[i], ratio);
     }
 
 }
