@@ -65,8 +65,6 @@ function animate() {
 
     if( santaDirection == DIRECTION.RIGHT ) {
 
-        console.log( 'santa x, renderer width, santa padding, santa speed', santa.position.x, renderer.width, SANTA_PADDING, santaSpeed );
-
         if( santa.position.x < DEFAULT_WIDTH - SANTA_SIZE - SANTA_PADDING ) {
             santa.position.x += santaSpeed;
         } else {
