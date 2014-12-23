@@ -8,12 +8,13 @@ var DEFAULT_WIDTH = 640,
     MINCE_PIE_THROW_Y_THRESHOLD = 20,
     stage = new PIXI.Stage(0x55813a, true),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT, {transparent: true}),
-    santaTexture,
+    scaleRatio = 1,
+    santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png'),
+    mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png'),
     santa,
     mincePie,
     santaSpeed = 5,
     santaDirection = DIRECTION.RIGHT,
-    scaleRatio = 1,
     mincePieBeingDragged = false,
     mincePieDragFrames = 0,
     mincePieOrigX,
@@ -77,14 +78,57 @@ function initIntroScene() {
 
     // Title
 
-    var title = new PIXI.Text("Santa\nWants\nPies", {font:'90px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
+    var title = new PIXI.Text('Santa\nWants\nPies', {font:'90px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
 
     title.anchor.x = 0.5;
 
     title.position.x = DEFAULT_WIDTH / 2;
-    title.position.y = 100;
+    title.position.y = 80;
 
     introContainer.addChild(title);
+
+    // Decorative mince pie
+
+    var introMincePie = new PIXI.Sprite(mincePieTexture);
+
+    introMincePie.interactive = true;
+
+    introMincePie.anchor.x = 0.5;
+    introMincePie.anchor.y = 0.5;
+
+    introMincePie.position.x = (DEFAULT_WIDTH / 2);
+    introMincePie.position.y = title.position.y + title.height + 80;
+
+    introContainer.addChild(introMincePie);
+
+    // Instructions text
+
+    var instructions = new PIXI.Text('Fling Santa as many mince \npies as you can before \nthe time runs out!',
+        {font:'40px Helvetica', fill:'white', align:'center'});
+
+    instructions.anchor.x = 0.5;
+
+    instructions.position.x = DEFAULT_WIDTH / 2;
+    instructions.position.y = introMincePie.position.y + introMincePie.height + 80;
+
+    introContainer.addChild(instructions);
+
+    // Ready button
+
+    var textureButton = PIXI.Texture.fromImage('img/button-ready.png');
+
+    var button = new PIXI.Sprite(textureButton);
+    button.buttonMode = true;
+
+    button.anchor.x = 0.5;
+    button.anchor.y = 1;
+
+    button.position.x = DEFAULT_WIDTH / 2;
+    button.position.y = DEFAULT_HEIGHT - 80;
+
+    button.interactive = true;
+
+    introContainer.addChild(button);
 
     stage.addChild(introContainer);
 
@@ -99,8 +143,6 @@ function initGameScene() {
 
     // Santa
 
-    santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png');
-
     santa = new PIXI.Sprite(santaTexture);
 
     santa.anchor.x = 0;
@@ -111,8 +153,6 @@ function initGameScene() {
     gameContainer.addChild(santa);
 
     // Mince pie
-
-    var mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png');
 
     mincePie = new PIXI.Sprite(mincePieTexture);
 
