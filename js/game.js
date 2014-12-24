@@ -233,7 +233,6 @@ function initResultScene() {
 
     resultContainer.addChild(youScored);
 
-
     scoreResultText = new PIXI.Text(score, {font:'120px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
 
     scoreResultText.anchor.x = 0.5;
