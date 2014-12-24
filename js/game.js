@@ -559,8 +559,6 @@ function animate() {
 
     }
 
-    //TWEEN.update();
-
     // Reason for applying and then un-applying is so we can use our expected coordinates & sizes for manipulating objects
     // See: http://ezelia.com/2013/pixi-tutorial
     applyRatio(scaleRatio);
