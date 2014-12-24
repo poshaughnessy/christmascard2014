@@ -3,7 +3,8 @@ var TIME_PER_GAME = 15,
     DEFAULT_WIDTH = 640,
     DEFAULT_HEIGHT = 960,
     SANTA_SIZE = 250,
-    SANTA_PADDING = 10,
+    SANTA_BUFFER_LEFT = 25,
+    SANTA_BUFFER_RIGHT = 0,
     DIRECTION = {LEFT : 0, RIGHT : 1},
     MINCE_PIE_WIDTH = 114,
     MINCE_PIE_HEIGHT = 72,
@@ -195,7 +196,7 @@ function initGameScene() {
 
     santa.anchor.x = 0;
 
-    santa.position.x = SANTA_PADDING;
+    santa.position.x = -SANTA_BUFFER_LEFT;
     santa.position.y = 50;
 
     gameContainer.addChild(santa);
@@ -462,7 +463,7 @@ function updateSantaPosition() {
 
     if( santaDirection == DIRECTION.RIGHT ) {
 
-        if( santa.position.x < DEFAULT_WIDTH - SANTA_SIZE - SANTA_PADDING ) {
+        if( santa.position.x < DEFAULT_WIDTH - SANTA_SIZE + SANTA_BUFFER_RIGHT ) {
             santa.position.x += santaSpeed;
         } else {
             santaDirection = DIRECTION.LEFT;
@@ -470,7 +471,7 @@ function updateSantaPosition() {
 
     } else {
 
-        if( santa.position.x > SANTA_PADDING ) {
+        if( santa.position.x > -SANTA_BUFFER_LEFT ) {
             santa.position.x -= santaSpeed;
         } else {
             santaDirection = DIRECTION.RIGHT;
