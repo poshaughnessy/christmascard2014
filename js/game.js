@@ -254,7 +254,7 @@ function initResultScene() {
     winText1.position.x = DEFAULT_WIDTH / 2;
     winText1.position.y = scoreResultText.position.y + scoreResultText.height + 80;
 
-    var winText2 = new PIXI.Text('Wishing you a very \nhappy holiday and \na joyful new year!', {font: '40px Courier', fill:'#f1e408', align: 'center', stroke: '#333', strokeThickness: 2});
+    var winText2 = new PIXI.Text('Wishing you a very \nhappy holiday and \na joyful new year!', {font: '42px Courier', fill:'#f1e408', align: 'center', stroke: '#333', strokeThickness: 1});
 
     winText2.anchor.x = 0.5;
     winText2.position.x = DEFAULT_WIDTH / 2;
@@ -436,7 +436,7 @@ function endGame() {
 
     scoreResultText.setText(score);
 
-    if( score > SCORE_WIN_THRESHOLD ) {
+    if( score >= SCORE_WIN_THRESHOLD ) {
 
         winText.visible = true;
         loseText.visible = false;
