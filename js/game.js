@@ -17,6 +17,7 @@ var TIME_PER_GAME = 15,
     timerOKTexture = PIXI.Texture.fromImage('img/timer.png'),
     timerWarnTexture = PIXI.Texture.fromImage('img/timer-red.png'),
     santaTexture = PIXI.Texture.fromImage('img/santa-mouth-open-250px.png'),
+    santaYumTexture = PIXI.Texture.fromImage('img/santa-yum-250px.png'),
     mincePieTexture = PIXI.Texture.fromImage('img/mince-pie.png'),
     santa,
     mincePie,
@@ -29,6 +30,7 @@ var TIME_PER_GAME = 15,
     tryAgainButton,
     timer = TIME_PER_GAME,
     timerTimeout,
+    textureTimeout,
     score = 0,
     santaSpeed = SANTA_START_SPEED,
     scaleRatio = 1,
@@ -573,6 +575,16 @@ function updateMincePiePosition() {
 function registerHit() {
 
     playYumSound();
+
+    santa.setTexture(santaYumTexture);
+
+    if( textureTimeout ) {
+        clearTimeout(textureTimeout);
+    }
+
+    textureTimeout = window.setTimeout(function() {
+        santa.setTexture(santaTexture);
+    }, 500);
 
     score++;
 
