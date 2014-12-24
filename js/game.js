@@ -8,6 +8,7 @@ var TIME_PER_GAME = 10,
     MINCE_PIE_WIDTH = 114,
     MINCE_PIE_HEIGHT = 72,
     MINCE_PIE_THROW_Y_THRESHOLD = 20,
+    SCORE_WIN_THRESHOLD = 5,
     stage = new PIXI.Stage(0x55813a, true),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT, {transparent: true}),
     timerOKTexture = PIXI.Texture.fromImage('img/timer.png'),
@@ -20,6 +21,8 @@ var TIME_PER_GAME = 10,
     timerText,
     scoreText,
     scoreResultText,
+    winText,
+    loseText,
     timer = TIME_PER_GAME,
     timerTimeout,
     score = 0,
@@ -226,7 +229,7 @@ function initResultScene() {
     youScored.anchor.x = 0.5;
 
     youScored.position.x = DEFAULT_WIDTH / 2;
-    youScored.position.y = 100;
+    youScored.position.y = 80;
 
     resultContainer.addChild(youScored);
 
@@ -236,9 +239,40 @@ function initResultScene() {
     scoreResultText.anchor.x = 0.5;
 
     scoreResultText.position.x = DEFAULT_WIDTH / 2;
-    scoreResultText.position.y = youScored.position.y + youScored.height + 100;
+    scoreResultText.position.y = youScored.position.y + youScored.height + 40;
 
     resultContainer.addChild(scoreResultText);
+
+    // Win text
+
+    var winText1 = new PIXI.Text('You did it! So here\'s a special \nChristmas message from me:', {font:'30px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
+
+    winText1.anchor.x = 0.5;
+    winText1.position.x = DEFAULT_WIDTH / 2;
+    winText1.position.y = scoreResultText.position.y + scoreResultText.height + 80;
+
+    var winText2 = new PIXI.Text('Wishing you a very \nhappy holiday and \na joyful new year!', {font: '40px Courier', fill:'#f1e408', align: 'center', stroke: '#333', strokeThickness: 2});
+
+    winText2.anchor.x = 0.5;
+    winText2.position.x = DEFAULT_WIDTH / 2;
+    winText2.position.y = winText1.position.y + winText1.height + 40;
+
+    winText = new PIXI.DisplayObjectContainer();
+
+    winText.addChild( winText1 );
+    winText.addChild( winText2 );
+
+    resultContainer.addChild(winText);
+
+    // Lose text
+
+    loseText = new PIXI.Text('...', {font:'40px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
+
+    loseText.anchor.x = 0.5;
+    loseText.position.x = DEFAULT_WIDTH / 2;
+    loseText.position.y = scoreResultText.position.y + scoreResultText.height + 80;
+
+    resultContainer.addChild(loseText);
 
     // Try again button
 
@@ -366,8 +400,6 @@ function onTimerTick() {
 
         timer--;
 
-        console.log('timer tick', timer);
-
         timerText.setText(timer);
 
         if( timer <= TIMER_WARN_THRESHOLD ) {
@@ -387,6 +419,19 @@ function endGame() {
     clearTimeout(timerTimeout);
 
     scoreResultText.setText(score);
+
+    if( score > SCORE_WIN_THRESHOLD ) {
+
+        winText.visible = true;
+        loseText.visible = false;
+
+    } else {
+
+        winText.visible = false;
+        loseText.setText( 'Good try! Score ' + (SCORE_WIN_THRESHOLD - score) + ' more \nto unlock a special message!' );
+        loseText.visible = true;
+
+    }
 
     switchScene('result');
 
