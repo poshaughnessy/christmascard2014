@@ -23,6 +23,7 @@ var TIME_PER_GAME = 10,
     scoreResultText,
     winText,
     loseText,
+    tryAgainButton,
     timer = TIME_PER_GAME,
     timerTimeout,
     score = 0,
@@ -277,22 +278,24 @@ function initResultScene() {
 
     var textureButton = PIXI.Texture.fromImage('img/button-try-again.png');
 
-    var button = new PIXI.Sprite(textureButton);
-    button.buttonMode = true;
+    tryAgainButton = new PIXI.Sprite(textureButton);
+    tryAgainButton.buttonMode = true;
 
-    button.anchor.x = 0.5;
-    button.anchor.y = 1;
+    tryAgainButton.anchor.x = 0.5;
+    tryAgainButton.anchor.y = 1;
 
-    button.position.x = DEFAULT_WIDTH / 2;
-    button.position.y = DEFAULT_HEIGHT - 80;
+    tryAgainButton.position.x = DEFAULT_WIDTH / 2;
+    tryAgainButton.position.y = DEFAULT_HEIGHT - 80;
 
-    button.interactive = true;
+    // Enable after a second to try to prevent people tapping accidentally if they're continuing to 'fling'
+    tryAgainButton.visible = false;
+    tryAgainButton.interactive = false;
 
-    resultContainer.addChild(button);
+    resultContainer.addChild(tryAgainButton);
 
     stage.addChild(resultContainer);
 
-    button.mousedown = button.touchstart = function(data) {
+    tryAgainButton.mousedown = tryAgainButton.touchstart = function(data) {
         startGame();
     };
 
@@ -368,6 +371,8 @@ function initInteractions() {
 
 function startGame() {
 
+    // Reset everything
+
     score = 0;
     scoreText.setText(score);
 
@@ -381,9 +386,14 @@ function startGame() {
     timer = TIME_PER_GAME;
     timerText.setText(timer);
 
-    console.log('reset timer', timer);
+    tryAgainButton.visible = false;
+    tryAgainButton.interactive = false;
+
+    // Switch to game scene
 
     switchScene('game');
+
+    // Start the timer...
 
     timerTimeout = setTimeout(onTimerTick, 1000);
 
@@ -431,6 +441,11 @@ function endGame() {
         loseText.visible = true;
 
     }
+
+    setTimeout(function() {
+        tryAgainButton.visible = true;
+        tryAgainButton.interactive = true;
+    }, 2000);
 
     switchScene('result');
 
