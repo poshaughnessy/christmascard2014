@@ -49,7 +49,11 @@ var TIME_PER_GAME = 15,
         game: new PIXI.DisplayObjectContainer(),
         result: new PIXI.DisplayObjectContainer()
     },
-    currentScene;
+    currentScene,
+    audioBufferList,
+    audioContext,
+    audioYum,
+    playingSound = false;
 
 init();
 
@@ -58,6 +62,8 @@ function init() {
     initIntroScene();
     initGameScene();
     initResultScene();
+
+    initAudio();
 
     switchScene('intro');
 
@@ -306,13 +312,41 @@ function initResultScene() {
 
 }
 
+function initAudio() {
+
+    var finishedLoading = function(bufferList) {
+
+        audioBufferList = bufferList;
+
+        console.log('Finished loading audio');
+
+    };
+
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    if( window.AudioContext ) {
+
+        audioContext = new AudioContext();
+
+        var bufferLoader = new BufferLoader(
+            audioContext,
+            [
+                'audio/yum.mp3'
+            ],
+            finishedLoading
+        );
+
+        bufferLoader.load();
+
+    }
+
+}
+
 function initInteractions() {
 
     mincePie.touchstart = mincePie.mousedown = function(data){
 
         mincePieBeingDragged = true;
-
-        console.log( 'down', data );
 
         mincePieThrowStartX = data.originalEvent.clientX || data.global.x;
         mincePieThrowStartY = data.originalEvent.clientY || data.global.y;
@@ -322,8 +356,6 @@ function initInteractions() {
     mincePie.touchmove = mincePie.mousemove = function(data) {
 
         if( mincePieBeingDragged ) {
-
-            //console.log('move', data);
 
             mincePieDragFrames++;
 
@@ -346,8 +378,6 @@ function initInteractions() {
     mincePie.mouseup = mincePie.touchend = mincePie.mouseupoutside = mincePie.touchendoutside = function(data) {
 
         if( mincePieBeingDragged ) {
-
-            console.log( 'up', data );
 
             var y = data.originalEvent.clientY || data.global.y;
 
@@ -507,9 +537,7 @@ function updateMincePiePosition() {
                 mincePie.position.y <= santa.position.y + (santa.height * 3/4) &&
                 mincePie.position.y >= santa.position.y ) {
 
-                console.log('hit!');
-
-                increaseScore();
+                registerHit();
                 endMincePieFling();
 
             }
@@ -542,7 +570,9 @@ function updateMincePiePosition() {
 
 }
 
-function increaseScore() {
+function registerHit() {
+
+    playYumSound();
 
     score++;
 
@@ -594,6 +624,25 @@ function applyRatio(ratio) {
         displayObjectContainer.scale.x = displayObjectContainer.scale.x * ratio;
         displayObjectContainer.scale.y = displayObjectContainer.scale.y * ratio;
 
+    }
+
+}
+
+function playYumSound() {
+
+    if( !playingSound && audioBufferList && audioBufferList.length > 0 ) {
+
+        playingSound = true;
+
+        // Sound when you hit Santa with mince pie
+
+        audioYum = audioContext.createBufferSource();
+        audioYum.buffer = audioBufferList[0];
+        audioYum.connect(audioContext.destination);
+        audioYum.onended = function() {
+            playingSound = false;
+        };
+        audioYum.start(0);
     }
 
 }
