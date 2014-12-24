@@ -9,6 +9,8 @@ var TIME_PER_GAME = 10,
     MINCE_PIE_HEIGHT = 72,
     MINCE_PIE_THROW_Y_THRESHOLD = 20,
     SCORE_WIN_THRESHOLD = 10,
+    SANTA_START_SPEED = 5,
+    SANTA_ACCELERATION = 1,
     stage = new PIXI.Stage(0x55813a, true),
     renderer = PIXI.autoDetectRenderer(DEFAULT_WIDTH, DEFAULT_HEIGHT, {transparent: true}),
     timerOKTexture = PIXI.Texture.fromImage('img/timer.png'),
@@ -27,7 +29,7 @@ var TIME_PER_GAME = 10,
     timer = TIME_PER_GAME,
     timerTimeout,
     score = 0,
-    santaSpeed = 5,
+    santaSpeed = SANTA_START_SPEED,
     scaleRatio = 1,
     santaDirection = DIRECTION.RIGHT,
     mincePieBeingDragged = false,
@@ -373,6 +375,8 @@ function startGame() {
 
     // Reset everything
 
+    santaSpeed = SANTA_START_SPEED;
+
     score = 0;
     scoreText.setText(score);
 
@@ -415,6 +419,8 @@ function onTimerTick() {
             timerIcon.setTexture(timerWarnTexture);
             timerText.tint = 0xf13d08;
         }
+
+        santaSpeed += SANTA_ACCELERATION;
 
         clearTimeout(timerTimeout);
         timerTimeout = setTimeout(onTimerTick, 1000);
