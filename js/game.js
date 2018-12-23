@@ -1,7 +1,7 @@
 var TIME_PER_GAME = 15,
     TIMER_WARN_THRESHOLD = 3,
-    DEFAULT_WIDTH = 640,
-    DEFAULT_HEIGHT = 960,
+    DEFAULT_WIDTH = 360,
+    DEFAULT_HEIGHT = 640,
     SANTA_SIZE = 250,
     SANTA_BUFFER_LEFT = 25,
     SANTA_BUFFER_RIGHT = 0,
@@ -104,12 +104,12 @@ function initIntroScene() {
 
     // Title
 
-    var title = new PIXI.Text('Santa\nWants\nPies', {font:'100px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
+    var title = new PIXI.Text('Santa\nWants\nPies', {font:'60px Courier', fill:'white', align:'center', stroke: '#333', strokeThickness: 2});
 
     title.anchor.x = 0.5;
 
     title.position.x = DEFAULT_WIDTH / 2;
-    title.position.y = 60;
+    title.position.y = 20;
 
     introContainer.addChild(title);
 
@@ -119,23 +119,27 @@ function initIntroScene() {
 
     introMincePie.interactive = true;
 
-    introMincePie.anchor.x = 0.5;
-    introMincePie.anchor.y = 0.5;
+    introMincePie.width = 100;
+    introMincePie.height = 100;
 
-    introMincePie.position.x = (DEFAULT_WIDTH / 2);
-    introMincePie.position.y = title.position.y + title.height + 80;
+    introMincePie.anchor.x = 0.5;
+
+    introMincePie.position.x = DEFAULT_WIDTH / 2;
+    introMincePie.position.y = title.position.y + title.height + 10;
 
     introContainer.addChild(introMincePie);
 
     // Instructions text
 
     var instructions = new PIXI.Text('Fling Santa as many mince \npies as you can before \nthe time runs out!',
-        {font:'40px Helvetica', fill:'white', align:'center'});
+        {font:'30px Helvetica', fill:'white', align:'center'});
 
     instructions.anchor.x = 0.5;
 
     instructions.position.x = DEFAULT_WIDTH / 2;
-    instructions.position.y = introMincePie.position.y + introMincePie.height + 80;
+    instructions.position.y = introMincePie.position.y + introMincePie.height + 40;
+
+    instructions.width = DEFAULT_WIDTH - 100;
 
     introContainer.addChild(instructions);
 
@@ -146,11 +150,11 @@ function initIntroScene() {
     var button = new PIXI.Sprite(textureButton);
     button.buttonMode = true;
 
-    button.anchor.x = 0.5;
-    button.anchor.y = 1;
-
-    button.position.x = DEFAULT_WIDTH / 2;
+    button.position.x = 10;
     button.position.y = DEFAULT_HEIGHT - 80;
+
+    button.width = DEFAULT_WIDTH - 20;
+    button.height = 80;
 
     button.interactive = true;
 
@@ -219,7 +223,7 @@ function initGameScene() {
     mincePie.anchor.y = 0.5;
 
     mincePie.position.x = (DEFAULT_WIDTH / 2);
-    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT/2 - 100;
+    mincePie.position.y = DEFAULT_HEIGHT - MINCE_PIE_HEIGHT/2 - 50;
 
     mincePieOrigX = mincePie.position.x;
     mincePieOrigY = mincePie.position.y;
@@ -236,16 +240,16 @@ function initResultScene() {
 
     // Score
 
-    var youScored = new PIXI.Text('You scored', {font:'80px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 2});
+    var youScored = new PIXI.Text('You scored', {font:'40px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 2});
 
     youScored.anchor.x = 0.5;
 
     youScored.position.x = DEFAULT_WIDTH / 2;
-    youScored.position.y = 80;
+    youScored.position.y = 20;
 
     resultContainer.addChild(youScored);
 
-    scoreResultText = new PIXI.Text(score, {font:'120px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
+    scoreResultText = new PIXI.Text(score, {font:'80px Helvetica', fill:'#f1e408', align:'center', stroke: '#333', strokeThickness: 2});
 
     scoreResultText.anchor.x = 0.5;
 
@@ -256,13 +260,13 @@ function initResultScene() {
 
     // Win text
 
-    var winText1 = new PIXI.Text('You did it! So here\'s a special \nChristmas message from me:', {font:'30px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
+    var winText1 = new PIXI.Text('You did it! So here\'s a special \nChristmas message from me:', {font:'25px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
 
     winText1.anchor.x = 0.5;
     winText1.position.x = DEFAULT_WIDTH / 2;
-    winText1.position.y = scoreResultText.position.y + scoreResultText.height + 80;
+    winText1.position.y = scoreResultText.position.y + scoreResultText.height + 40;
 
-    var winText2 = new PIXI.Text('Wishing you a very \nhappy holiday and \na joyful new year!', {font: '42px Courier', fill:'#f1e408', align: 'center', stroke: '#333', strokeThickness: 1});
+    var winText2 = new PIXI.Text('Wishing you a very \nhappy holiday and \na joyful new year!', {font: '28px Courier', fill:'#f1e408', align: 'center', stroke: '#333', strokeThickness: 1});
 
     winText2.anchor.x = 0.5;
     winText2.position.x = DEFAULT_WIDTH / 2;
@@ -277,7 +281,7 @@ function initResultScene() {
 
     // Lose text
 
-    loseText = new PIXI.Text('...', {font:'40px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
+    loseText = new PIXI.Text('...', {font:'25px Helvetica', fill:'#ffffff', align:'center', stroke: '#333', strokeThickness: 1});
 
     loseText.anchor.x = 0.5;
     loseText.position.x = DEFAULT_WIDTH / 2;
@@ -292,11 +296,11 @@ function initResultScene() {
     tryAgainButton = new PIXI.Sprite(textureButton);
     tryAgainButton.buttonMode = true;
 
-    tryAgainButton.anchor.x = 0.5;
-    tryAgainButton.anchor.y = 1;
-
-    tryAgainButton.position.x = DEFAULT_WIDTH / 2;
+    tryAgainButton.position.x = 10;
     tryAgainButton.position.y = DEFAULT_HEIGHT - 80;
+
+    tryAgainButton.width = DEFAULT_WIDTH - 20;
+    tryAgainButton.height = 80;
 
     // Enable after a second to try to prevent people tapping accidentally if they're continuing to 'fling'
     tryAgainButton.visible = false;
