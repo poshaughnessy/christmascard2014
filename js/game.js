@@ -1,7 +1,7 @@
 var TIME_PER_GAME = 15,
     TIMER_WARN_THRESHOLD = 3,
-    DEFAULT_WIDTH = 360,
-    DEFAULT_HEIGHT = 640,
+    DEFAULT_WIDTH = window.innerWidth,
+    DEFAULT_HEIGHT = window.innerHeight,
     SANTA_SIZE = 250,
     SANTA_BUFFER_LEFT = 25,
     SANTA_BUFFER_RIGHT = 0,
@@ -109,7 +109,7 @@ function initIntroScene() {
     title.anchor.x = 0.5;
 
     title.position.x = DEFAULT_WIDTH / 2;
-    title.position.y = 20;
+    title.position.y = 40;
 
     introContainer.addChild(title);
 
@@ -151,7 +151,7 @@ function initIntroScene() {
     button.buttonMode = true;
 
     button.position.x = 10;
-    button.position.y = DEFAULT_HEIGHT - 80;
+    button.position.y = DEFAULT_HEIGHT - 100;
 
     button.width = DEFAULT_WIDTH - 20;
     button.height = 80;
@@ -297,7 +297,7 @@ function initResultScene() {
     tryAgainButton.buttonMode = true;
 
     tryAgainButton.position.x = 10;
-    tryAgainButton.position.y = DEFAULT_HEIGHT - 80;
+    tryAgainButton.position.y = DEFAULT_HEIGHT - 100;
 
     tryAgainButton.width = DEFAULT_WIDTH - 20;
     tryAgainButton.height = 80;
